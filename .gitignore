@@ -1,0 +1,12 @@
+# Carpetas de compilación de Ant / NetBeans
+build/
+dist/
+
+# Archivos privados de NetBeans
+nbproject/private/
+
+# Archivos de sistema y compilados
+*.class
+*.jar
+*.war
+.DS_Store
