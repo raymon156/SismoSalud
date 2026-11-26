@@ -1,5 +1,6 @@
 package clases;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -85,13 +86,13 @@ public class Hospital {
     }
 
     // ---------- Medicamentos (RF05, RF06) ----------
-    public Medicamento registrarMedicamento(String codigo, String nombre, int stock, int minimo) {
+    public Medicamento registrarMedicamento(String codigo, String nombre, int stock, int minimo, LocalDate fechaVencimiento) {
         for (Medicamento m : medicamentos) {
             if (m.getCodigo().equalsIgnoreCase(codigo.trim())) {
                 throw new IllegalArgumentException("Ya existe un medicamento con el código " + codigo.trim() + ".");
             }
         }
-        Medicamento nuevo = new Medicamento(codigo, nombre, stock, minimo);
+        Medicamento nuevo = new Medicamento(codigo, nombre, stock, minimo, fechaVencimiento);
         medicamentos.add(nuevo);
         return nuevo;
     }

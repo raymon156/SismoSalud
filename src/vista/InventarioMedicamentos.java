@@ -6,6 +6,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,16 +25,20 @@ import javax.swing.table.TableCellRenderer;
 
 public class InventarioMedicamentos extends JFrame {
 
+    private static final DateTimeFormatter FORMATO_FECHA =
+            DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
+
     private Hospital hospital;
     private JTextField txtCodigo = new JTextField(6);
     private JTextField txtNombre = new JTextField(12);
     private JTextField txtStock = new JTextField(5);
     private JTextField txtMinimo = new JTextField(5);
+    private JTextField txtVencimiento = new JTextField(8);
     private JButton btnAgregar = new JButton("Agregar");
     private JButton btnActualizar = new JButton("Actualizar stock");
     private JLabel lblAlertas = new JLabel(" ");
     private DefaultTableModel modelo = new DefaultTableModel(
-            new String[]{"Código", "Nombre", "Stock", "Mínimo", "Estado"}, 0) {
+            new String[]{"Código", "Nombre", "Stock", "Mínimo", "Vencimiento", "Estado"}, 0) {
         @Override
         public boolean isCellEditable(int fila, int columna) {
             return false;
@@ -46,7 +55,7 @@ public class InventarioMedicamentos extends JFrame {
     private void iniciarComponentes() {
         setTitle("Inventario de medicamentos");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(720, 460);
+        setSize(780, 460);
 
         // Las filas con stock bajo se resaltan en rojo (RF06)
         tabla = new JTable(modelo) {
@@ -54,25 +63,33 @@ public class InventarioMedicamentos extends JFrame {
             public Component prepareRenderer(TableCellRenderer r, int fila, int columna) {
                 Component c = super.prepareRenderer(r, fila, columna);
                 if (!isRowSelected(fila)) {
-                    boolean bajo = "STOCK BAJO".equals(getValueAt(fila, 4));
+                    boolean bajo = "STOCK BAJO".equals(getValueAt(fila, 5));
                     c.setBackground(bajo ? new Color(255, 200, 200) : Color.WHITE);
                 }
                 return c;
             }
         };
 
-        JPanel formulario = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
+        JPanel fila1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        fila1.add(new JLabel("Código:"));
+        fila1.add(txtCodigo);
+        fila1.add(new JLabel("Nombre:"));
+        fila1.add(txtNombre);
+        fila1.add(new JLabel("Stock:"));
+        fila1.add(txtStock);
+        fila1.add(new JLabel("Mínimo:"));
+        fila1.add(txtMinimo);
+
+        JPanel fila2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        fila2.add(new JLabel("Vencimiento (dd/mm/aaaa):"));
+        fila2.add(txtVencimiento);
+        fila2.add(btnAgregar);
+        fila2.add(btnActualizar);
+
+        JPanel formulario = new JPanel(new GridLayout(2, 1));
         formulario.setBorder(BorderFactory.createEmptyBorder(8, 8, 0, 8));
-        formulario.add(new JLabel("Código:"));
-        formulario.add(txtCodigo);
-        formulario.add(new JLabel("Nombre:"));
-        formulario.add(txtNombre);
-        formulario.add(new JLabel("Stock:"));
-        formulario.add(txtStock);
-        formulario.add(new JLabel("Mínimo:"));
-        formulario.add(txtMinimo);
-        formulario.add(btnAgregar);
-        formulario.add(btnActualizar);
+        formulario.add(fila1);
+        formulario.add(fila2);
 
         lblAlertas.setForeground(Color.RED);
         lblAlertas.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
@@ -90,15 +107,20 @@ public class InventarioMedicamentos extends JFrame {
         try {
             int stock = Integer.parseInt(txtStock.getText().trim());
             int minimo = Integer.parseInt(txtMinimo.getText().trim());
-            Medicamento m = hospital.registrarMedicamento(txtCodigo.getText(), txtNombre.getText(), stock, minimo);
+            LocalDate vencimiento = LocalDate.parse(txtVencimiento.getText().trim(), FORMATO_FECHA);
+            Medicamento m = hospital.registrarMedicamento(txtCodigo.getText(), txtNombre.getText(),
+                    stock, minimo, vencimiento);
             txtCodigo.setText("");
             txtNombre.setText("");
             txtStock.setText("");
             txtMinimo.setText("");
+            txtVencimiento.setText("");
             cargarTabla();
             mostrarResultado(m, "registrado");
         } catch (NumberFormatException ex) {
             mostrarError("El stock y el mínimo deben ser números enteros.");
+        } catch (DateTimeParseException ex) {
+            mostrarError("La fecha de vencimiento debe tener el formato dd/mm/aaaa (por ejemplo, 31/12/2027).");
         } catch (IllegalArgumentException ex) {
             mostrarError(ex.getMessage());
         }
@@ -143,7 +165,7 @@ public class InventarioMedicamentos extends JFrame {
         modelo.setRowCount(0);
         for (Medicamento m : hospital.getMedicamentos()) {
             modelo.addRow(new Object[]{m.getCodigo(), m.getNombre(), m.getStock(), m.getStockMinimo(),
-                m.tieneStockBajo() ? "STOCK BAJO" : "Normal"});
+                m.getFechaVencimiento().format(FORMATO_FECHA), m.tieneStockBajo() ? "STOCK BAJO" : "Normal"});
         }
         int bajos = hospital.medicamentosStockBajo().size();
         lblAlertas.setText(bajos == 0 ? " " : "⚠ Medicamentos con stock bajo: " + bajos);

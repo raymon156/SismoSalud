@@ -5,6 +5,7 @@ import clases.Prioridad;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.time.LocalDate;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -70,9 +71,9 @@ public class Principal extends JFrame {
         hospital.registrarCama(3);
         hospital.registrarPersonal("Dr. Carlos Ramos");
         hospital.registrarPersonal("Dra. Elena Paredes");
-        hospital.registrarMedicamento("M001", "Paracetamol 500 mg", 200, 50);
-        hospital.registrarMedicamento("M002", "Suero fisiológico", 30, 40);
-        hospital.registrarMedicamento("M003", "Gasas estériles", 120, 60);
+        hospital.registrarMedicamento("M001", "Paracetamol 500 mg", 200, 50, LocalDate.of(2027, 8, 31));
+        hospital.registrarMedicamento("M002", "Suero fisiológico", 30, 40, LocalDate.of(2027, 3, 15));
+        hospital.registrarMedicamento("M003", "Gasas estériles", 120, 60, LocalDate.of(2028, 1, 20));
     }
 
     public static void main(String[] args) {

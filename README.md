@@ -12,7 +12,7 @@ Proyecto del curso **Lenguajes de Programación** – Universidad Privada del No
 - **Registro de pacientes** con nombre, DNI, edad y prioridad de triaje (ROJO, AMARILLO, VERDE).
 - **Consulta de pacientes** ordenados del más urgente al menos urgente, con filtro por prioridad.
 - **Camas y personal médico:** registrar, asignar un paciente y liberar.
-- **Inventario de medicamentos:** registrar, actualizar el stock y mostrar alertas cuando hay pocas existencias.
+- **Inventario de medicamentos:** registrar (con código, nombre, stock, mínimo y fecha de vencimiento), actualizar el stock y mostrar alertas cuando hay pocas existencias.
 - **Protección del DNI:** en pantalla solo se muestran los dos últimos dígitos (por ejemplo, `******78`).
 - Mensajes claros cuando un registro se completa o hay un error.
 
@@ -70,7 +70,7 @@ SismoSalud/
 1. En la ventana **Sismo-Salud PE** elige una opción y presiona **Ingresar**.
 2. **Registro de pacientes:** completa los campos y presiona *Registrar*. Usa el filtro para ver una prioridad.
 3. **Camas y personal:** agrega una cama o un integrante del personal, selecciónalo en la tabla y usa *Asignar* o *Liberar*.
-4. **Medicamentos:** agrega un medicamento o selecciónalo y usa *Actualizar stock*. Las filas en rojo indican stock bajo.
+4. **Medicamentos:** agrega un medicamento (la fecha de vencimiento se escribe como `dd/mm/aaaa`) o selecciónalo y usa *Actualizar stock*. Las filas en rojo indican stock bajo.
 
 Al abrir el programa se cargan datos de ejemplo ficticios (3 pacientes, 3 camas, 2 médicos y 3 medicamentos).
 
